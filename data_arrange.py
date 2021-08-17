@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.signal import savgol_filter as sgf
 
-smoothing_window = 5
+smoothing_window = 7
 smoothing_order = 2
 
 def deriv(p, w):
@@ -12,11 +12,11 @@ folder = r''
 
 OS_metadata = pd.read_csv('ftir_metadata.csv')
 OS_library = pd.read_csv('ftir_library.csv')
-OS_library = OS_library[((OS_library['wavenumber']<2300) | (OS_library['wavenumber']>2400)) & (OS_library['wavenumber']>905)]
+OS_library = OS_library[((OS_library['wavenumber']<2300) | (OS_library['wavenumber']>2400)) & (OS_library['wavenumber']>900)]
 
 OS_int = pd.DataFrame()
 OS_derivative = pd.DataFrame()
-wavenos = np.array(range(905,4000,1))
+wavenos = np.array(range(900,4000,1))
 OS_int['wavenos'] = wavenos
 OS_int.set_index('wavenos')
 
