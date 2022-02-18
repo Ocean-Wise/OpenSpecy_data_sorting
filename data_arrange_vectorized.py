@@ -33,6 +33,7 @@ for name in OS_metadata['sample_name']:
     OS_int[name] = sigint
     der_sigint = sgf(deriv(sigint,smoothing_window),smoothing_window,smoothing_order)
     OS_derivative[name] = der_sigint
+    print(name)
 
 
 file_int = 'open_specy_ftir_library_INTv2.csv'
