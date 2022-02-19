@@ -3,3 +3,5 @@ nb_data_clustering_orig.ipynb
 reference_absorbance_raw.csv
 open_specy_reference_FTIR_DERINT.csv
 open_specy_reference_FTIR_INT.csv
+open_specy_ALL_interp.csv
+open_specy_ALL_deriv.csv

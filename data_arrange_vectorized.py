@@ -13,33 +13,36 @@ folder = r''
 OS_metadata = pd.read_csv('reference_absorbance_raw_metadata.csv', encoding='latin1')
 OS_library = pd.read_csv('reference_absorbance_raw.csv')
 OS_library = OS_library[((OS_library['wavenumber']<2300) | (OS_library['wavenumber']>2400)) & (OS_library['wavenumber']>900)]
+OS_library = OS_library.sort_values(by=['wavenumber'])
 
-OS_int = pd.DataFrame()
-OS_derivative = pd.DataFrame()
 wavenos = np.array(range(900,4000,1))
-OS_int['wavenos'] = wavenos
-OS_int.set_index('wavenos')
 
-OS_derivative['wavenos'] = wavenos
-OS_derivative.set_index('wavenos')
+grouped = OS_library.groupby(['sample_name'])
 
-for name in OS_metadata['sample_name']:
-    wn = OS_library[OS_library['sample_name']==name].sort_values(by='wavenumber')['wavenumber']
-    sig = OS_library[OS_library['sample_name']==name].sort_values(by='wavenumber')['intensity']
+def interpolator(frame):
     try:
-        sigint = np.interp(wavenos,wn,sig)
-    except ValueError: np.zeros(len(wavenos))
+        sigint = np.interp(wavenos,frame['wavenumber'],frame['intensity'])
+    except ValueError: sigint = np.zeros(len(wavenos))
     sigint = sigint - np.min(sigint)
-    OS_int[name] = sigint
-    der_sigint = sgf(deriv(sigint,smoothing_window),smoothing_window,smoothing_order)
-    OS_derivative[name] = der_sigint
-    print(name)
+    #der_sigint = sgf(deriv(sigint,smoothing_window),smoothing_window,smoothing_order)
+    print('frame')
+    return pd.Series(sigint)
 
+def deriv_smth(ser):
+    return pd.Series(sgf(deriv(ser,smoothing_window),smoothing_window,smoothing_order))
 
-file_int = 'open_specy_ftir_library_INTv2.csv'
-file_der = 'open_specy_ftir_library_DERINTv2.csv'
+OS_intT = grouped.apply(interpolator)
 
-OS_int.to_csv(file_int, index=False)
-OS_derivative.to_csv(file_der, index=False)
+OS_int = OS_intT.T.set_axis(wavenos)
+OS_int.index.names=['wavenumbers']
 
-print(OS_derivative)
+OS_der = OS_int.apply(deriv_smth,axis=0)
+
+OS_der = OS_der.set_axis(wavenos)
+OS_der.index.names=['wavenumbers']
+
+file_int = 'open_specy_ALL_interp.csv'
+file_der = 'open_specy_ALL_deriv.csv'
+
+OS_int.to_csv(file_int)
+OS_der.to_csv(file_der)
