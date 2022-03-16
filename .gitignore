@@ -5,3 +5,4 @@ open_specy_reference_FTIR_DERINT.csv
 open_specy_reference_FTIR_INT.csv
 open_specy_ALL_interp.csv
 open_specy_ALL_deriv.csv
+poly*.csv
